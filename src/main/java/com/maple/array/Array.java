@@ -73,11 +73,12 @@ public class Array<E> {
     }
 
     public E getFirst() {
-        return get(size - 1);
+        return get(0);
     }
 
     public E getLast() {
-        return get(0);
+        return get(size - 1);
+
     }
 
 
