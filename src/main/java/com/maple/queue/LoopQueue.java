@@ -14,32 +14,111 @@ package com.maple.queue;
  * @author <a href=mailto:leihuazhe@gmail.com>maple</a>
  * @since 2018-11-04 11:15 PM
  */
+@SuppressWarnings("unchecked")
 public class LoopQueue<E> implements Queue<E> {
-    @Override
-    public void enqueue(E e) {
-
-    }
-
     /**
-     * 出队操作
+     * 底层存放容器数组
      */
-    @Override
-    public E dequeue() {
-        return null;
+    private E[] elementData;
+
+    private int front, tail;
+    private int size;
+
+    public LoopQueue(int capacity) {
+        //循环数组会浪费一个空间
+        this.elementData = (E[]) new Object[capacity + 1];
+        front = 0;
+        tail = 0;
+        size = 0;
     }
 
-    @Override
-    public E getFront() {
-        return null;
+    public LoopQueue() {
+        this(10);
     }
 
-    @Override
-    public int getSize() {
-        return 0;
+
+    // -1
+    public int getCapacity() {
+        return elementData.length - 1;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return front == tail;
     }
+
+    @Override
+    public int getSize() {
+        return size;
+    }
+
+    /**
+     * enqueue
+     */
+    @Override
+    public void enqueue(E e) {
+        if ((tail + 1) % elementData.length == front) {
+            //data.length与getCapacity 有1的差距
+            resize(getCapacity() * 2);
+        }
+        elementData[tail] = e;
+        //循环队列的操作
+        tail = (tail + 1) % elementData.length;
+        size++;
+    }
+
+
+    /**
+     * 出队操作 dequeue
+     */
+    @Override
+    public E dequeue() {
+        if (isEmpty()) {
+            throw new IllegalArgumentException("Can not dequeue from an empty queue.");
+        }
+        E ret = elementData[front];
+        elementData[front] = null;
+        front = (front + 1) % elementData.length;
+        size--;
+        if (size == getCapacity() / 4 && getCapacity() / 2 != 0) {
+            resize(getCapacity() / 2);
+        }
+        return ret;
+    }
+
+    @Override
+    public E getFront() {
+        if (isEmpty()) {
+            throw new IllegalArgumentException("Can not dequeue from an empty queue.");
+        }
+        return elementData[front];
+    }
+
+    private void resize(int newCapacity) {
+        E[] newData = (E[]) new Object[newCapacity + 1];
+
+        for (int i = 0; i < size; i++) {
+            newData[i] = elementData[(i + front) % elementData.length];
+        }
+        elementData = newData;
+        front = 0;
+        tail = size;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder res = new StringBuilder();
+        res.append("Queue: size = ").append(size).append(", capacity: ").append(getCapacity()).append("\n");
+        res.append("front [");
+        for (int i = front; i != tail; i = (i + 1) % elementData.length) {
+            res.append(elementData[i]);
+            if ((i + 1) % elementData.length != tail) {
+                res.append(", ");
+            }
+        }
+        res.append("] tail");
+        return res.toString();
+    }
+
+
 }

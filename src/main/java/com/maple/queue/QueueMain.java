@@ -8,9 +8,14 @@ import com.maple.stack.ArrayStack;
  */
 public class QueueMain {
     public static void main(String[] args) {
-        stress();
-        Queue<Integer> queue = new ArrayQueue<>();
+        stressArrayQueue();
+        stressLoopQueue();
+    }
 
+
+
+    public static void arrayQueue() {
+        Queue<Integer> queue = new ArrayQueue<>();
         for (int i = 0; i < 10; i++) {
             queue.enqueue(i);
             System.out.println(queue);
@@ -20,23 +25,54 @@ public class QueueMain {
                 System.out.println(queue);
             }
         }
+
     }
 
-
-    public static void stress() {
+    public static void stressArrayQueue() {
         Queue<Integer> queue = new ArrayQueue<>();
         long begin = System.currentTimeMillis();
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 100000000; i++) {
             queue.enqueue(i);
 //            System.out.println(queue);
         }
-        System.out.println("enqueue耗时: " + (System.currentTimeMillis() - begin) + "ms");
+        System.out.println("array enqueue耗时: " + (System.currentTimeMillis() - begin) + "ms");
 
         long begin2 = System.currentTimeMillis();
         Integer dequeue = queue.dequeue();
-        System.out.println("dequeue耗时: " + (System.currentTimeMillis() - begin) + "ms " + dequeue);
+        System.out.println("array dequeue耗时: " + (System.currentTimeMillis() - begin2) + "ms " + dequeue);
 
 
     }
+
+    public static void stressLoopQueue() {
+        Queue<Integer> queue = new LoopQueue<>();
+        long begin = System.currentTimeMillis();
+        for (int i = 0; i < 100000000; i++) {
+            queue.enqueue(i);
+//            System.out.println(queue);
+        }
+        System.out.println("loop enqueue耗时: " + (System.currentTimeMillis() - begin) + "ms");
+
+        long begin2 = System.currentTimeMillis();
+        Integer dequeue = queue.dequeue();
+        System.out.println("loop dequeue耗时: " + (System.currentTimeMillis() - begin2) + "ms " + dequeue);
+
+
+    }
+
+    public static void loopQueue() {
+        Queue<Integer> queue = new LoopQueue<>();
+        for (int i = 0; i < 15; i++) {
+            queue.enqueue(i);
+            System.out.println(queue);
+            if (i % 3 == 2) {
+                //如果100万的队列,每次出队时间会很长
+                queue.dequeue();
+                System.out.println(queue);
+            }
+        }
+
+    }
+
 
 }
